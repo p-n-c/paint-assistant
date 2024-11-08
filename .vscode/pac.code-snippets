@@ -1,6 +1,6 @@
 {
   "People & Code HTML Page": {
-    "prefix": ["page-p&c", "p&c"],
+    "prefix": ["page-pac", "pac"],
     "body": [
       "<!doctype html>",
       "<html lang=\"en\">",
