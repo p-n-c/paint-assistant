@@ -3,20 +3,24 @@ import url from 'url'
 
 const PORT = 3000
 const ENDPOINT = `http://localhost:${PORT}/`
-const QS_KEY_1 = 'qs1'
+const QS_KEY = 'qs'
 
-const reqRes = [
+const colours = [
   {
-    req: 'A',
-    res: '1',
+    name: 'red',
+    hex: '#ff0000',
   },
   {
-    req: 'B',
-    res: '2',
+    name: 'green',
+    hex: '#008000',
   },
   {
-    req: 'J',
-    res: '10',
+    name: 'blue',
+    hex: '#0000ff',
+  },
+  {
+    name: 'white',
+    hex: '#ffffff ',
   },
 ]
 
@@ -52,15 +56,15 @@ server.on('request', (req, res) => {
   console.log('queryAsObject: ', queryAsObject)
 
   // Get first query string value
-  const reqValue = queryAsObject[QS_KEY_1]
+  const reqValue = queryAsObject[QS_KEY]
   console.log('reqValue: ', reqValue)
 
   let resValue
 
-  // Lookup return value for first query string value
+  // Look up return value for query string value
   resValue =
-    reqRes.find((rr) => rr.req.toLowerCase() === reqValue?.toLowerCase())
-      ?.res || null
+    colours.find((c) => c.name.toLowerCase() === reqValue?.toLowerCase())
+      ?.hex || colours
 
   console.log('resValue: ', resValue)
 

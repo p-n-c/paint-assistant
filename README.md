@@ -22,6 +22,6 @@ Run:
 
 `sudo lsof -i :3000`
 
-Find the relevant service, copy its PID, then enter:
+Find the relevant (node) service, copy its PID, then enter:
 
 `kill -9 <PID>`
