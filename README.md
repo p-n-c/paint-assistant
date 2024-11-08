@@ -18,9 +18,10 @@ This often happens when the following error message appears in the terminal:
 
 `EADDRINUSE: address already in use`
 
-This is what you do:
+Run:
 
-```zsh
-sudo lsof -i :3000
-kill -9 <PID>
-```
+`sudo lsof -i :3000`
+
+Find the relevant service, copy its PID, then enter:
+
+`kill -9 <PID>`
