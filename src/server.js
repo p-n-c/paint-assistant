@@ -66,6 +66,9 @@ server.on('request', (req, res) => {
     colours.find((c) => c.name.toLowerCase() === reqValue?.toLowerCase())
       ?.hex || null
 
+  // Return all colours if no query string
+  if (Object.keys(queryAsObject).length === 0) resValue = colours
+
   console.log('resValue: ', resValue)
 
   res.statusCode = resValue ? statusCodes[0] : statusCodes[1]
