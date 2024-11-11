@@ -64,7 +64,7 @@ server.on('request', (req, res) => {
   // Look up return value for query string value
   resValue =
     colours.find((c) => c.name.toLowerCase() === reqValue?.toLowerCase())
-      ?.hex || colours
+      ?.hex || null
 
   console.log('resValue: ', resValue)
 
