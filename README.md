@@ -2,7 +2,7 @@
 
 This is a simple HTTP server that has no dependencies, and runs in a node.js environment.
 
-To run the server, run this command in the terminal:
+To start the server, run this command in the terminal:
 
 `node src/server.js`
 
