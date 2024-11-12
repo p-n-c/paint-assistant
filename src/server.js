@@ -40,9 +40,7 @@ const handleGetRequest = (req, res) => {
 const handlePostRequest = (req, res) => {
   // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Content-Type', 'application/json')
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   console.log('Request method: ', req.method)
 
