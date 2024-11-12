@@ -17,23 +17,24 @@ const handleGetRequest = (req, res) => {
   const parsedUrl = url.parse(req.url, true)
   const queryAsObject = parsedUrl.query
 
-  // Get query string value
+  // Get the colour name from the query string value
   const reqColour = queryAsObject['colour']
 
-  // Look up return value for query string value
+  // Find details of the colour requested
   let resColour =
     colours.find((c) => c.name.toLowerCase() === reqColour?.toLowerCase()) ||
     null
 
-  // Return all colours if no colour specified
+  // Return all colours if no colour is specified
   if (Object.keys(queryAsObject).length === 0) resColour = colours
 
+  // Set the response status (200 is success, 400 failure)
   res.statusCode = resColour ? 200 : 400
 
-  // Return request response
+  // Return details of the colour requested
   res.end(JSON.stringify(resColour))
 
-  // Console log out
+  // Console log out the request query value and the response
   console.log('Request for colour: ', reqColour)
   console.log('Response: ', JSON.stringify(resColour))
 }
@@ -43,15 +44,17 @@ const handlePostRequest = (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
+  // Console log out the request method (OPTIONS or POST)
   console.log('Request method: ', req.method)
 
-  // Preflight request (browser generated)
+  // Handle the preflight request (browser generated)
   if (req.method === 'OPTIONS') {
     res.writeHead(204)
     res.end()
     return
   }
 
+  // Handle the POSTed data
   if (req.method === 'POST') {
     let data = ''
 
@@ -66,6 +69,7 @@ const handlePostRequest = (req, res) => {
         let colour
 
         switch (contentType) {
+          // Posted from the form
           case 'application/x-www-form-urlencoded':
             {
               const formData = querystring.parse(data)
@@ -73,12 +77,14 @@ const handlePostRequest = (req, res) => {
               colour = { name, hex }
             }
             break
+          // Posted using fetch (JSON format)
           default:
             colour = JSON.parse(data)
         }
 
+        // Check if colour exists
         if (colours.map((hc) => hc.name).includes(colour.name)) {
-          // Colour already exists
+          // If so, send 409 Conflict
           res.writeHead(409)
           res.end(
             JSON.stringify({
@@ -87,13 +93,13 @@ const handlePostRequest = (req, res) => {
             })
           )
         } else {
-          // Add new colour
+          // Otherwise, add the new colour
           colours.push(colour)
 
           // Console log out
           console.log('Colours: ', colours)
 
-          // Send success response
+          // Send success response, 201 Created
           res.writeHead(201)
           res.end(
             JSON.stringify({
@@ -103,10 +109,12 @@ const handlePostRequest = (req, res) => {
           )
         }
       } catch (e) {
+        console.log(e)
+        // Or the generic fail code 400
         res.writeHead(400)
         res.end(
           JSON.stringify({
-            error: 'Invalid JSON provided',
+            error: 'Invalid data provided',
           })
         )
       }
