@@ -1,10 +1,9 @@
 import http from 'http'
 import url from 'url'
-import { statusCodes, hexColours, colours, colourise } from './utils.js'
+import { colours } from './utils.js'
 
 const PORT = 3000
 const ENDPOINT = `http://localhost:${PORT}/`
-const KEY = 'colour'
 
 const server = http.createServer()
 
@@ -17,28 +16,25 @@ const handleGetRequest = (req, res) => {
   const parsedUrl = url.parse(req.url, true)
   const queryAsObject = parsedUrl.query
 
-  // Get first query string value
-  const reqValue = queryAsObject[KEY]
+  // Get query string value
+  const reqColour = queryAsObject['colour']
 
   // Look up return value for query string value
-  let resValue =
-    hexColours.find((c) => c.name.toLowerCase() === reqValue?.toLowerCase())
-      ?.hex || null
+  let resColour =
+    colours.find((c) => c.name.toLowerCase() === reqColour?.toLowerCase()) ||
+    null
 
-  // Return all hexColours if no query string
-  if (Object.keys(queryAsObject).length === 0) resValue = hexColours
+  // Return all colours if no colour specified
+  if (Object.keys(queryAsObject).length === 0) resColour = colours
 
-  res.statusCode = resValue ? statusCodes[0] : statusCodes[1]
+  res.statusCode = resColour ? 200 : 400
 
   // Return request response
-  res.end(JSON.stringify(resValue))
+  res.end(JSON.stringify(resColour))
 
   // Console log out
-  console.log(
-    colourise(`queryAsObject: ${JSON.stringify(queryAsObject)}`, colours.yellow)
-  )
-  console.log(colourise(`reqValue: ${reqValue}`, colours.yellow))
-  console.log(colourise(`resValue: ${resValue}`, colours.yellow))
+  console.log('Request for colour: ', reqColour)
+  console.log('Response: ', JSON.stringify(resColour))
 }
 
 const handlePostRequest = (req, res) => {
@@ -48,47 +44,52 @@ const handlePostRequest = (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
+  console.log('Request method: ', req.method)
+
+  // Preflight request (browser generated)
   if (req.method === 'OPTIONS') {
-    res.writeHead(204) // No content needed for OPTIONS
+    res.writeHead(204)
     res.end()
     return
   }
-
-  console.log('req.method: ', req.method)
 
   if (req.method === 'POST') {
     let data = ''
 
     req.on('data', (chunk) => {
-      // Append the chunk to the data variable
       data += chunk.toString()
     })
 
-    console.log('data: ', data)
-
     req.on('end', () => {
       try {
-        const hexColour = JSON.parse(data)
-        console.log('hexColour: ', hexColour)
-        // if (!hexColours.map((hc) => hc.name).includes(hexColour.name)) {
-        hexColours.push(hexColour)
-        // }
+        const colour = JSON.parse(data)
 
-        // Console log out
-        console.log('hexColours: ', hexColours)
+        if (colours.map((hc) => hc.name).includes(colour.name)) {
+          // Colour already exists
+          res.writeHead(409)
+          res.end(
+            JSON.stringify({
+              message: 'Colour already exists',
+              colour,
+            })
+          )
+        } else {
+          colours.push(colour)
 
-        // Send success response
-        res.writeHead(201, { 'Content-Type': 'application/json' })
-        res.end(
-          JSON.stringify({
-            message: 'Colour added successfully',
-            colour: hexColour,
-          })
-        )
+          // Console log out
+          console.log('Colours: ', colours)
+
+          // Send success response
+          res.writeHead(201)
+          res.end(
+            JSON.stringify({
+              message: 'Colour added successfully',
+              colour,
+            })
+          )
+        }
       } catch (e) {
-        console.log('e:', e)
-        // Handle invalid JSON
-        res.writeHead(400, { 'Content-Type': 'application/json' })
+        res.writeHead(400)
         res.end(
           JSON.stringify({
             error: 'Invalid JSON provided',
@@ -108,5 +109,5 @@ server.on('request', async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Server running at ${ENDPOINT}`)
+  console.log(`Server running at: ${ENDPOINT}`)
 })
