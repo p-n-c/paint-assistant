@@ -11,7 +11,7 @@ const server = http.createServer()
 const handleGetRequest = (req, res) => {
   // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Content-Type', 'application/json')
+  // res.setHeader('Content-Type', 'application/json')
 
   // Get key value pairs from the query string
   const parsedUrl = url.parse(req.url, true)
