@@ -1,4 +1,5 @@
 import http from 'http'
+import querystring from 'querystring'
 import url from 'url'
 import { colours } from './utils.js'
 
@@ -40,7 +41,7 @@ const handleGetRequest = (req, res) => {
 const handlePostRequest = (req, res) => {
   // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   console.log('Request method: ', req.method)
 
@@ -60,7 +61,21 @@ const handlePostRequest = (req, res) => {
 
     req.on('end', () => {
       try {
-        const colour = JSON.parse(data)
+        const contentType = req.headers['content-type']
+
+        let colour
+
+        switch (contentType) {
+          case 'application/x-www-form-urlencoded':
+            {
+              const formData = querystring.parse(data)
+              const { name, hex } = formData
+              colour = { name, hex }
+            }
+            break
+          default:
+            colour = JSON.parse(data)
+        }
 
         if (colours.map((hc) => hc.name).includes(colour.name)) {
           // Colour already exists
@@ -72,6 +87,7 @@ const handlePostRequest = (req, res) => {
             })
           )
         } else {
+          // Add new colour
           colours.push(colour)
 
           // Console log out
