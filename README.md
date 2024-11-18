@@ -6,6 +6,10 @@ To start the server, run this command in the terminal:
 
 `node src/server.js`
 
+If you want the server to restart when you save, run this command in the terminal:
+
+`npm run server`
+
 ## Server process
 
 When you want to shut down the service, run:
