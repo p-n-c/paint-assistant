@@ -28,8 +28,8 @@ const handleGetRequest = (req, res) => {
   // Return all colours if no colour is specified
   if (Object.keys(queryAsObject).length === 0) resColour = colours
 
-  // Set the response status (200 is success, 400 failure)
-  res.statusCode = resColour ? 200 : 400
+  // Set the response status (200 is success, 404 page not found)
+  res.statusCode = resColour ? 200 : 404
 
   // Return details of the colour requested
   res.end(JSON.stringify(resColour))
@@ -42,7 +42,7 @@ const handleGetRequest = (req, res) => {
 const handlePostRequest = (req, res) => {
   // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   // Console log out the request method (OPTIONS or POST)
   console.log('Request method: ', req.method)
