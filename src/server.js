@@ -10,7 +10,8 @@ const server = http.createServer()
 
 const handleGetRequest = (req, res) => {
   // Set headers
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  // The following two headers are commented out at the start of the workshop
+  // res.setHeader('Access-Control-Allow-Origin', '*')
   // res.setHeader('Content-Type', 'application/json')
 
   // Get key value pairs from the query string
@@ -42,6 +43,7 @@ const handleGetRequest = (req, res) => {
 const handlePostRequest = (req, res) => {
   // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
+  // The following header is commented out at the start of the workshop
   // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   // Console log out the request method (OPTIONS or POST)
@@ -66,20 +68,18 @@ const handlePostRequest = (req, res) => {
       try {
         const contentType = req.headers['content-type']
 
-        let colour
+        let colour,
+          isFromForm = contentType === 'application/x-www-form-urlencoded'
 
-        switch (contentType) {
+        if (isFromForm) {
           // Posted from the form
-          case 'application/x-www-form-urlencoded':
-            {
-              const formData = querystring.parse(data)
-              const { name, hex } = formData
-              colour = { name, hex }
-            }
-            break
-          // Posted using fetch (JSON format)
-          default:
-            colour = JSON.parse(data)
+          const formData = querystring.parse(data)
+          const { name, hex } = formData
+          colour = { name, hex }
+        }
+        // Posted using fetch (JSON format)
+        else {
+          colour = JSON.parse(data)
         }
 
         // Check if colour exists
@@ -99,14 +99,29 @@ const handlePostRequest = (req, res) => {
           // Console log out
           console.log('Colours: ', colours)
 
-          // Send success response, 201 Created
-          res.writeHead(201)
-          res.end(
-            JSON.stringify({
-              message: 'Colour added successfully',
-              colour,
-            })
-          )
+          if (isFromForm) {
+            // Respond with a message included in the HTML
+            res.writeHead(201, { 'Content-Type': 'text/html' })
+            res.end(`
+              <html>
+              <head><title>Response</title></head>
+              <body>
+                  <p>Your colour, ${colour.name}, was successfully added. 
+                  <a href="/">Go back</a>
+              </body>
+              </html>
+          `)
+          } else {
+            // Send success response, 201 Created
+            res.writeHead(201)
+
+            res.end(
+              JSON.stringify({
+                message: 'Colour added successfully',
+                colour,
+              })
+            )
+          }
         }
       } catch (e) {
         console.log(e)
