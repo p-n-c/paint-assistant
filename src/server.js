@@ -1,7 +1,6 @@
 import http from 'http'
-import querystring from 'querystring'
 import url from 'url'
-import { colours } from './utils.js'
+import { paints } from './paint-data.js'
 
 const PORT = 3000
 const ENDPOINT = `http://localhost:${PORT}/`
@@ -10,141 +9,94 @@ const server = http.createServer()
 
 const handleGetRequest = (req, res) => {
   // Set headers
-  // The following two headers are commented out at the start of the workshop
-  // res.setHeader('Access-Control-Allow-Origin', '*')
-  // res.setHeader('Content-Type', 'application/json')
-
-  // Get key value pairs from the query string
-  const parsedUrl = url.parse(req.url, true)
-  const queryAsObject = parsedUrl.query
-
-  // Get the colour name from the query string value
-  const reqColour = queryAsObject['colour']
-
-  // Find details of the colour requested
-  let resColour =
-    colours.find((c) => c.name.toLowerCase() === reqColour?.toLowerCase()) ||
-    null
-
-  // Return all colours if no colour is specified
-  if (Object.keys(queryAsObject).length === 0) resColour = colours
-
-  // Set the response status (200 is success, 404 page not found)
-  res.statusCode = resColour ? 200 : 404
-
-  // Return details of the colour requested
-  res.end(JSON.stringify(resColour))
-
-  // Console log out the request query value and the response
-  console.log('Request for colour: ', reqColour)
-  console.log('Response: ', JSON.stringify(resColour))
-}
-
-const handlePostRequest = (req, res) => {
-  // Set headers
   res.setHeader('Access-Control-Allow-Origin', '*')
-  // The following header is commented out at the start of the workshop
-  // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Content-Type', 'application/json')
 
-  // Console log out the request method (OPTIONS or POST)
-  console.log('Request method: ', req.method)
+  // Get query parameters
+  const parsedUrl = url.parse(req.url, true)
+  const query = parsedUrl.query
 
-  // Handle the preflight request (browser generated)
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204)
-    res.end()
-    return
-  }
+  // Initialize response
+  let response = null
+  let statusCode = 200
 
-  // Handle the POSTed data
-  if (req.method === 'POST') {
-    let data = ''
+  try {
+    // Return all paints if no query parameters
+    if (Object.keys(query).length === 0) {
+      response = paints
+    }
+    // Handle specific queries
+    else {
+      const { code, name, temperature, voc } = query
 
-    req.on('data', (chunk) => {
-      data += chunk.toString()
-    })
-
-    req.on('end', () => {
-      try {
-        const contentType = req.headers['content-type']
-
-        let colour,
-          isFromForm = contentType === 'application/x-www-form-urlencoded'
-
-        if (isFromForm) {
-          // Posted from the form
-          const formData = querystring.parse(data)
-          const { name, hex } = formData
-          colour = { name, hex }
-        }
-        // Posted using fetch (JSON format)
-        else {
-          colour = JSON.parse(data)
-        }
-
-        // Check if colour exists
-        if (colours.map((hc) => hc.name).includes(colour.name)) {
-          // If so, send 409 Conflict
-          res.writeHead(409)
-          res.end(
-            JSON.stringify({
-              message: 'Colour already exists',
-              colour,
-            })
-          )
-        } else {
-          // Otherwise, add the new colour
-          colours.push(colour)
-
-          // Console log out
-          console.log('Colours: ', colours)
-
-          if (isFromForm) {
-            // Respond with a message included in the HTML
-            res.writeHead(201, { 'Content-Type': 'text/html' })
-            res.end(`
-              <html>
-              <head><title>Response</title></head>
-              <body>
-                  <p>Your colour, ${colour.name}, was successfully added. 
-                  <a href="/">Go back</a>
-              </body>
-              </html>
-          `)
-          } else {
-            // Send success response, 201 Created
-            res.writeHead(201)
-
-            res.end(
-              JSON.stringify({
-                message: 'Colour added successfully',
-                colour,
-              })
-            )
-          }
-        }
-      } catch (e) {
-        console.log(e)
-        // Or the generic fail code 400
-        res.writeHead(400)
-        res.end(
-          JSON.stringify({
-            error: 'Invalid data provided',
-          })
+      if (code) {
+        // Search by exact code match (case sensitive)
+        response = paints.find((p) => p.code === code)
+      } else if (name) {
+        // Search by name (case insensitive)
+        response = paints.find(
+          (p) => p.name.toLowerCase() === name.toLowerCase()
         )
+      } else if (temperature) {
+        // Find paints suitable for a specific temperature
+        const temp = parseFloat(temperature)
+        response = paints.filter(
+          (p) =>
+            temp >= p.application.temperature.min &&
+            temp <= p.application.temperature.max
+        )
+      } else if (voc) {
+        // Find paints with VOC lower than specified
+        const vocLimit = parseFloat(voc)
+        response = paints.filter((p) => p.safety.VOC <= vocLimit)
       }
-    })
+
+      // Set 404 if no matching paint found
+      if (!response || (Array.isArray(response) && response.length === 0)) {
+        statusCode = 404
+        response = {
+          error: 'No matching paints found',
+          query: query,
+        }
+      }
+    }
+
+    // Log request details
+    console.log('Request query:', query)
+    console.log('Response status:', statusCode)
+
+    // Send response
+    res.statusCode = statusCode
+    res.end(JSON.stringify(response))
+  } catch (error) {
+    // Handle errors
+    console.error('Error processing request:', error)
+    res.statusCode = 500
+    res.end(
+      JSON.stringify({
+        error: 'Internal server error',
+        message: error.message,
+      })
+    )
   }
 }
 
 server.on('request', async (req, res) => {
   if (req.method === 'GET') {
     handleGetRequest(req, res)
-  } else if (req.url === '/post') {
-    handlePostRequest(req, res)
+  } else {
+    // Handle unsupported methods
+    res.statusCode = 405
+    res.end(
+      JSON.stringify({
+        error: 'Method not allowed',
+        message: 'Only GET requests are supported',
+      })
+    )
   }
 })
 
 server.listen(PORT, () => {
-  console.log(`Server running at: ${ENDPOINT}`)
+  console.log(`Paint Server running at: ${ENDPOINT}`)
+  console.log('Available query parameters: code, name, temperature, voc')
 })
