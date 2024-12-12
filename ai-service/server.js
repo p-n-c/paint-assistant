@@ -3,6 +3,7 @@ dotenv.config()
 
 import express from 'express'
 import { handleQuery } from './handlers/query.js'
+import { startPolling } from './services/polling.js';
 
 const app = express()
 const PORT = 3001
@@ -15,3 +16,6 @@ app.post('/query', handleQuery)
 app.listen(PORT, () => {
   console.log(`AI Service running at http://localhost:${PORT}`)
 })
+
+// Start the polling service
+startPolling();
