@@ -27,24 +27,24 @@ const handleGetRequest = (req, res) => {
     }
     // Handle specific queries
     else {
-      const { code, name, temperature, maxvoc } = query
-
-      switch (query) {
+      const key = Object.keys(query)[0]
+      console.log('Query key:', key)
+      switch (key) {
         case 'code': {
           // Search by exact code match (case sensitive)
-          response = paints.find((p) => p.code === code)
+          response = paints.find((p) => p.code === query.code)
           break
         }
         case 'name': {
           // Search by name (case insensitive)
           response = paints.find(
-            (p) => p.name.toLowerCase() === name.toLowerCase()
+            (p) => p.name.toLowerCase() === query.name.toLowerCase()
           )
           break
         }
-        case temperature: {
+        case 'temperature': {
           // Find paints suitable for a specific temperature
-          const temp = parseFloat(temperature)
+          const temp = parseFloat(query.temperature)
           response = paints.filter(
             (p) =>
               temp >= p.application.temperature.min &&
@@ -52,13 +52,22 @@ const handleGetRequest = (req, res) => {
           )
           break
         }
-        case maxvoc: {
+        case 'maxvoc': {
           // Find paints with VOC lower than specified
-          const vocLimit = parseFloat(maxvoc)
+          const vocLimit = parseFloat(query.maxvoc)
           response = paints.filter((p) => p.safety.VOC <= vocLimit)
           break
         }
+        default: {
+          // Set 400 for unsupported query parameters
+          statusCode = 400
+          response = {
+            error: 'Unsupported query parameter',
+            query: query,
+          }
+        }
       }
+
       // Set 404 if no matching paint found
       if (!response || (Array.isArray(response) && response.length === 0)) {
         statusCode = 404

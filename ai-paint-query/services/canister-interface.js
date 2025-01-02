@@ -44,8 +44,8 @@ if (isLocal) {
 const idlFactory = ({ IDL }) => {
   // Define the structure for our API queries
   const APIQuery = IDL.Record({
-    query_type: IDL.Text, // Type of query (e.g., 'temperature', 'voc')
-    value: IDL.Nat, // The query value (e.g., temperature value, VOC limit)
+    query_type: IDL.Text, // Type of query (e.g., 'temperature', 'maxvoc')
+    value: IDL.Text, // The query value (e.g., temperature value, VOC limit)
   })
 
   // Define what a cached translation entry looks like
@@ -59,7 +59,7 @@ const idlFactory = ({ IDL }) => {
   return IDL.Service({
     check_cache: IDL.Func([IDL.Text], [IDL.Opt(TranslationEntry)], ['query']),
     store_translation: IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Nat, IDL.Text],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
       []
     ),
@@ -89,7 +89,6 @@ export async function queryPaintData(naturalQuery) {
     // Canister returns an array
     // If we found a cached result, parse and return it
     if (cached.length > 0) {
-      console.log('Cache hit! Returning stored result')
       return JSON.parse(cached[0].api_response)
     }
 

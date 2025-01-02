@@ -51,28 +51,33 @@ export async function queryPaintApi(params) {
  * 4. Stores results
  */
 export async function processQuery(naturalQuery) {
+  var apiResponse = null
+  var parameters = null
   try {
     // First check if we have a cached result
     const cached = await canister.check_cache(naturalQuery)
     if (cached.length > 0) return JSON.parse(cached.api_response)
 
     // If not cached, translate and process
-    const parameters = await translateQuery(naturalQuery)
+    parameters = await translateQuery(naturalQuery)
     console.log('Translated query:', parameters)
-    const apiResponse = await queryPaintApi(parameters)
-
-    // Store the result in cache
-    const [queryType, queryValue] = Object.entries(parameters)[0]
-    await canister.store_translation(
-      naturalQuery,
-      queryType,
-      queryValue,
-      JSON.stringify(apiResponse)
-    )
-
-    return apiResponse
+    apiResponse = await queryPaintApi(parameters)
   } catch (error) {
     console.error('Error processing query:', error)
     throw new Error('Failed to process paint query')
   }
+  try {
+    // Store the result in cache
+    const [queryType, queryValue] = Object.entries(parameters)[0]
+    await canister.store_translation(
+      naturalQuery,
+      JSON.stringify(queryType),
+      JSON.stringify(queryValue),
+      JSON.stringify(apiResponse)
+    )
+  } catch (error) {
+    console.error('Failed to store translation:', error)
+    throw new Error('Failed to store translation')
+  }
+  return apiResponse
 }

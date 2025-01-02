@@ -17,7 +17,8 @@ const TEST_QUERIES = [
   'What paints work at 40 degrees?',
   'Show me paints with VOC under 40',
   'Find paint code AX-117-R',
-  'What paints work at 40 degrees?', // Repeated query to demonstrate caching
+  'What paints work at 40 degrees?', // Repeated number query to demonstrate caching
+  'Find paint code AX-117-R', // Repeated text query to demonstrate caching
 ]
 
 /**
