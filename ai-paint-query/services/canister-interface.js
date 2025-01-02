@@ -85,7 +85,6 @@ export async function queryPaintData(naturalQuery) {
   try {
     // First, check if we have this query cached
     const cached = await canister.check_cache(naturalQuery)
-    console.log('Cached result:', cached)
 
     // Canister returns an array
     // If we found a cached result, parse and return it

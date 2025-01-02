@@ -27,30 +27,38 @@ const handleGetRequest = (req, res) => {
     }
     // Handle specific queries
     else {
-      const { code, name, temperature, voc } = query
+      const { code, name, temperature, maxvoc } = query
 
-      if (code) {
-        // Search by exact code match (case sensitive)
-        response = paints.find((p) => p.code === code)
-      } else if (name) {
-        // Search by name (case insensitive)
-        response = paints.find(
-          (p) => p.name.toLowerCase() === name.toLowerCase()
-        )
-      } else if (temperature) {
-        // Find paints suitable for a specific temperature
-        const temp = parseFloat(temperature)
-        response = paints.filter(
-          (p) =>
-            temp >= p.application.temperature.min &&
-            temp <= p.application.temperature.max
-        )
-      } else if (voc) {
-        // Find paints with VOC lower than specified
-        const vocLimit = parseFloat(voc)
-        response = paints.filter((p) => p.safety.VOC <= vocLimit)
+      switch (query) {
+        case 'code': {
+          // Search by exact code match (case sensitive)
+          response = paints.find((p) => p.code === code)
+          break
+        }
+        case 'name': {
+          // Search by name (case insensitive)
+          response = paints.find(
+            (p) => p.name.toLowerCase() === name.toLowerCase()
+          )
+          break
+        }
+        case temperature: {
+          // Find paints suitable for a specific temperature
+          const temp = parseFloat(temperature)
+          response = paints.filter(
+            (p) =>
+              temp >= p.application.temperature.min &&
+              temp <= p.application.temperature.max
+          )
+          break
+        }
+        case maxvoc: {
+          // Find paints with VOC lower than specified
+          const vocLimit = parseFloat(maxvoc)
+          response = paints.filter((p) => p.safety.VOC <= vocLimit)
+          break
+        }
       }
-
       // Set 404 if no matching paint found
       if (!response || (Array.isArray(response) && response.length === 0)) {
         statusCode = 404
@@ -98,5 +106,5 @@ server.on('request', async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Paint Server running at: ${ENDPOINT}`)
-  console.log('Available query parameters: code, name, temperature, voc')
+  console.log('Available query parameters: code, name, temperature, maxvoc')
 })

@@ -16,7 +16,7 @@ const anthropic = new Anthropic({
 
 // Claude's system prompt for query translation
 const SYSTEM_PROMPT = `You are a paint expert API translator. Convert natural language queries about paint into API parameters.
-Available parameters: code, name, temperature, voc
+Available parameters: code, name, temperature, maxvoc
 Return only JSON object. Example: "paint for 35 degrees" -> {"temperature": 35}`
 
 /**
@@ -58,6 +58,7 @@ export async function processQuery(naturalQuery) {
 
     // If not cached, translate and process
     const parameters = await translateQuery(naturalQuery)
+    console.log('Translated query:', parameters)
     const apiResponse = await queryPaintApi(parameters)
 
     // Store the result in cache
