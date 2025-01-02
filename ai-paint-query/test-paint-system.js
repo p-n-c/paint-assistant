@@ -17,10 +17,10 @@ import { config } from './config/config.js'
 
 // Test queries that demonstrate different types of paint-related questions
 const TEST_QUERIES = [
-  'What paints work at 25 degrees?',
+  'What paints work at 40 degrees?',
   'Show me paints with VOC under 40',
   'Find paint code AX-117-R',
-  'What paints work at 25 degrees?', // Repeated query to demonstrate caching
+  'What paints work at 40 degrees?', // Repeated query to demonstrate caching
 ]
 
 /**

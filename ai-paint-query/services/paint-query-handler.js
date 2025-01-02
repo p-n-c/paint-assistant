@@ -54,7 +54,7 @@ export async function processQuery(naturalQuery) {
   try {
     // First check if we have a cached result
     const cached = await canister.check_cache(naturalQuery)
-    if (cached) return JSON.parse(cached.api_response)
+    if (cached.length > 0) return JSON.parse(cached.api_response)
 
     // If not cached, translate and process
     const parameters = await translateQuery(naturalQuery)
