@@ -1,14 +1,27 @@
-# HTTP server
+# HTTP Paint server
 
-This is a simple HTTP server that has no dependencies, and runs in a node.js environment.
+Located in `./paint-api`
 
-To start the server, run this command in the terminal:
+This is a simple HTTP server that exposes a basic API to query a `paints` array stored in `paint-data.js`. 
+To start the server, run this command in a terminal open in `./paint-api`:
 
-`node src/server.js`
+`npm start`
 
-If you want the server to restart when you save, run this command in the terminal:
+The server is running on `http://localhost:3000/` and expects queries for one of the following parameters (at the moment, only one):
+- Paint code: `code`
+- Paint name: `name`
+- Temperature of use: `temperature`
+- VOC content: `voc`
 
-`npm run server`
+Returns an array of suitable paint objects or a 404 Error if no suitable paint is available.
+
+# HTTP AI server
+
+Located in `./ai-service`
+
+
+
+
 
 ## Server process
 
