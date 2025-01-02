@@ -1,9 +1,6 @@
 // test-paint-system.js
 import { processQuery } from './services/paint-query-handler.js'
-import {
-  queryPaintData,
-  storeTranslation,
-} from './services/canister-interface.js'
+import { queryPaintData, clearCache } from './services/canister-interface.js'
 import { config } from './config/config.js'
 
 /**
@@ -65,6 +62,10 @@ async function runSingleTest(naturalQuery, isRepeat = false) {
 async function runAllTests() {
   console.log('Starting Paint Query System Tests')
   console.log('=================================')
+
+  // Clear the cache before running tests
+  await clearCache()
+  console.log('Cache cleared, starting tests...')
 
   // Process each test query in sequence
   for (let i = 0; i < TEST_QUERIES.length; i++) {

@@ -63,6 +63,7 @@ const idlFactory = ({ IDL }) => {
       [],
       []
     ),
+    clear_cache: IDL.Func([], [], []),
   })
 }
 
@@ -123,6 +124,20 @@ export async function storeTranslation(
     )
   } catch (error) {
     console.error('Store translation failed:', error)
+  }
+}
+
+/**
+ * Clears the cache in the Paint data translation system.
+ * This is useful for testing and development purposes.
+ */
+export async function clearCache() {
+  try {
+    await canister.clear_cache()
+    console.log('Cache cleared successfully')
+  } catch (error) {
+    console.error('Failed to clear cache:', error)
+    throw error
   }
 }
 
