@@ -8,6 +8,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import axios from 'axios'
 import { config } from '../config/config.js'
 import { canister } from './canister-interface.js'
+import { simpleQuery } from '../config/contracts.js'
 
 // Initialize Anthropic client for Claude
 const anthropic = new Anthropic({
@@ -15,9 +16,8 @@ const anthropic = new Anthropic({
 })
 
 // Claude's system prompt for query translation
-const SYSTEM_PROMPT = `You are a paint expert API translator. Convert natural language queries about paint into API parameters.
-Available parameters: code, name, temperature, maxvoc
-Return only JSON object. Example: "paint for 35 degrees" -> {"temperature": 35}`
+const SYSTEM_PROMPT = `You are an export natural language to API translator. 
+Convert natural language queries into API parameters according to the following contract. ${simpleQuery}`
 
 /**
  * Translates a natural language query to Paint API parameters using Claude
