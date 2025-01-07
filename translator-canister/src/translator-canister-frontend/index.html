@@ -7,7 +7,7 @@
       name="description"
       content="API natural language query using AI and blockchain"
     />
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="./assets/index.css" />
     <title>API Natural Language Query | People and Code</title>
   </head>
   <body class="body">
@@ -15,24 +15,22 @@
       <h1>API Natural Language Query</h1>
     </header>
     <main class="main">
-      <div class="query-form">
-        <input
-          type="text"
-          id="queryInput"
-          class="query-input"
-          placeholder="Enter your paint query (e.g., 'What paints work at 40 degrees?')"
-        />
-        <button onclick="submitQuery()" class="submit-button">
-          Submit Query
-        </button>
+      <div class="query-container">
+        <form id="query-form">
+          <input
+            type="text"
+            id="queryInput"
+            class="query-input"
+            placeholder="Enter your paint query (e.g., 'What paints work at 40 degrees?')"
+          />
+          <button type="submit" class="submit-button">Submit Query</button>
+        </form>
       </div>
       <div id="response" class="response"></div>
-
-      <script src="https://sdk.dfinity.org/js/dfinity.js"></script>
-      <script src="index.js"></script>
     </main>
     <footer>
       Provided by <a href="https://people-and-code.com">People and Code</a>
     </footer>
+    <script type="module" src="./assets/index.js"></script>
   </body>
 </html>

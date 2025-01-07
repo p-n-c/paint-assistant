@@ -2,11 +2,10 @@
   "name": "translator-canister",
   "version": "1.0.0",
   "description": "ICP canister to manage natural language queries to a backend API",
-  "main": "index.html",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "mkdir -p dist && cp -r src/translator-canister-frontend/* dist/",
-    "clean": "rm -rf dist/*",
+    "build": "echo 'No build step needed'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "People and Code",

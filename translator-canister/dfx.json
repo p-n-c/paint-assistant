@@ -7,9 +7,9 @@
     "translator-canister-frontend": {
       "dependencies": ["translator-canister-backend"],
       "frontend": {
-        "entrypoint": "/src/translator-canister-frontend/index.html"
+        "entrypoint": "src/translator-canister-frontend/index.html"
       },
-      "source": ["dist/"],
+      "source": ["src/translator-canister-frontend"],
       "type": "assets"
     }
   },
