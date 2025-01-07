@@ -1,0 +1,24 @@
+{
+  "canisters": {
+    "translator-canister-backend": {
+      "main": "src/translator-canister-backend/main.mo",
+      "type": "motoko"
+    },
+    "translator-canister-frontend": {
+      "dependencies": ["translator-canister-backend"],
+      "frontend": {
+        "entrypoint": "/src/translator-canister-frontend/index.html"
+      },
+      "source": ["dist/"],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

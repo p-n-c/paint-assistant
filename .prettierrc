@@ -1,0 +1,19 @@
+{
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "semi": false,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "*.mo",
+      "options": {
+        "plugins": ["prettier-plugin-motoko"],
+        "bracketSpacing": true,
+        "printWidth": 80,
+        "semi": true,
+        "trailingComma": "es5",
+        "useTabs": false
+      }
+    }
+  ]
+}

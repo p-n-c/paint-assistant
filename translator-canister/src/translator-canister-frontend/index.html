@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="API natural language query using AI and blockchain"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <title>API Natural Language Query | People and Code</title>
+  </head>
+  <body class="body">
+    <header>
+      <h1>API Natural Language Query</h1>
+    </header>
+    <main class="main">
+      <div class="query-form">
+        <input
+          type="text"
+          id="queryInput"
+          class="query-input"
+          placeholder="Enter your paint query (e.g., 'What paints work at 40 degrees?')"
+        />
+        <button onclick="submitQuery()" class="submit-button">
+          Submit Query
+        </button>
+      </div>
+      <div id="response" class="response"></div>
+
+      <script src="https://sdk.dfinity.org/js/dfinity.js"></script>
+      <script src="index.js"></script>
+    </main>
+    <footer>
+      Provided by <a href="https://people-and-code.com">People and Code</a>
+    </footer>
+  </body>
+</html>
