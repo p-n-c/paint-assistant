@@ -5,12 +5,14 @@
       "type": "motoko"
     },
     "translator-canister-frontend": {
-      "dependencies": ["translator-canister-backend"],
-      "frontend": {
-        "entrypoint": "src/translator-canister-frontend/index.html"
-      },
-      "source": ["src/translator-canister-frontend"],
-      "type": "assets"
+      "dependencies": [
+        "translator-canister-backend"
+      ],
+      "source": [
+        "src/translator-canister-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "translator-canister-frontend"
     }
   },
   "defaults": {

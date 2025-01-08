@@ -184,11 +184,11 @@ blockquote {
     line-height: 1.6;
   }
 
-  ul {
+  :is(ul) {
     margin-left: 0;
     padding: 0;
 
-    ul {
+    :is(ul) {
       padding: revert;
     }
   }
