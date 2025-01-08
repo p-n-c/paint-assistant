@@ -63,15 +63,17 @@ class App {
 
     try {
       const cached = await this.canisterApi.checkCache(query)
+      let replyHtml = `<p>Natural language query: ${query}</p>`
+      if (cached.length > 0) {
+        // Simply return the cached answer
+        replyHtml += `<p>Found in cache:</p><p>${JSON.stringify(cached)}<p>`
+      } else {
+        replyHtml += `<p>Not found in cache - Querying API</p>`
+      }
 
       // Update response content
-      responseDiv.textContent =
-        cached.length > 0
-          ? `Found in cache: ${JSON.stringify(cached)}`
-          : 'Not found in cache'
-
-      // Reset error styling if it was previously set
       responseDiv.style.color = ''
+      responseDiv.innerHTML = replyHtml
     } catch (error) {
       console.error('Error querying canister:', error)
       this.showError('Error processing your query. Please try again.')
