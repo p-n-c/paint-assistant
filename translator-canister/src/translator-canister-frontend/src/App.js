@@ -1,9 +1,25 @@
 import { translator_canister_backend } from 'declarations/translator-canister-backend'
+import TranslationService from './services/translationService'
+import PaintApiService from './services/paintApiService'
 
 class App {
   constructor() {
     // Initialize class properties
     this.canisterApi = null
+
+    // Access document elements
+    this.queryInput = document.getElementById('queryInput')
+    this.responseDiv = document.getElementById('response')
+
+    // Initialize translation service
+    this.translationService = new TranslationService(
+      import.meta.env.VITE_CLAUDE_API_KEY
+    )
+
+    // Initialize the paint API service
+    this.paintApiService = new PaintApiService(
+      import.meta.env.VITE_PAINT_API_URL
+    )
 
     // Bind methods to maintain correct 'this' context
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -24,7 +40,7 @@ class App {
       this.attachEventListeners()
     } catch (error) {
       console.error('Failed to initialize app:', error)
-      this.showError('Failed to initialize application')
+      this.showError(this.responseDiv, 'Failed to initialize application')
     }
   }
 
@@ -46,29 +62,35 @@ class App {
   async handleSubmit(event) {
     event.preventDefault()
 
-    const queryInput = document.getElementById('queryInput')
-    const responseDiv = document.getElementById('response')
-
     const query = queryInput.value.trim().toLowerCase()
     if (!query) {
-      this.showError('Please enter a query')
+      this.showError(this.responseDiv, 'Please enter a query')
       return
     }
 
     try {
       const cached = await this.canisterApi.checkCache(query)
-      this.initElement(responseDiv)
-      this.addUpdate(responseDiv, `Natural language query: ${query}`)
+      this.initElement(this.responseDiv)
+      this.addUpdate(this.responseDiv, `Natural language query: ${query}`)
       if (cached.length > 0) {
         // Simply return the cached answer
-        this.addUpdate(responseDiv, 'Found in cache:')
-        this.addUpdate(responseDiv, `${JSON.stringify(cached)}`)
+        this.addUpdate(this.responseDiv, 'Found in cache:')
+        this.addUpdate(this.responseDiv, `${JSON.stringify(cached)}`)
       } else {
-        this.addUpdate(responseDiv, 'Not found in cache - Querying API')
+        this.addUpdate(this.responseDiv, 'Not found in cache - Querying API')
+        const parameters = await this.translationService.translateQuery(query)
+        this.addUpdate(this.responseDiv, `AI Translated query: ${parameters}`)
+        this.addUpdate(this.responseDiv, 'Querying Paint API')
+        const apiResponse = await this.paintApiService.queryPaint(parameters)
+        this.addUpdate(this.responseDiv, 'API response:')
+        this.addUpdate(this.responseDiv, JSON.stringify(apiResponse))
       }
     } catch (error) {
       console.error('Error querying canister:', error)
-      this.showError('Error processing your query. Please try again.')
+      this.showError(
+        this.responseDiv,
+        'Error processing your query. Please try again.'
+      )
     }
   }
 
