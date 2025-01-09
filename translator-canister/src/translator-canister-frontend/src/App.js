@@ -20,12 +20,6 @@ class App {
       // Set up the canister API
       await this.setupCanisterApi()
 
-      // Set the logo source
-      const logoElement = document.getElementById('logo')
-      if (logoElement) {
-        logoElement.src = logo
-      }
-
       // Attach event listeners
       this.attachEventListeners()
     } catch (error) {
@@ -63,28 +57,41 @@ class App {
 
     try {
       const cached = await this.canisterApi.checkCache(query)
-      let replyHtml = `<p>Natural language query: ${query}</p>`
+      this.initElement(responseDiv)
+      this.addUpdate(responseDiv, `Natural language query: ${query}`)
       if (cached.length > 0) {
         // Simply return the cached answer
-        replyHtml += `<p>Found in cache:</p><p>${JSON.stringify(cached)}<p>`
+        this.addUpdate(responseDiv, 'Found in cache:')
+        this.addUpdate(responseDiv, `${JSON.stringify(cached)}`)
       } else {
-        replyHtml += `<p>Not found in cache - Querying API</p>`
+        this.addUpdate(responseDiv, 'Not found in cache - Querying API')
       }
-
-      // Update response content
-      responseDiv.style.color = ''
-      responseDiv.innerHTML = replyHtml
     } catch (error) {
       console.error('Error querying canister:', error)
       this.showError('Error processing your query. Please try again.')
     }
   }
 
+  // Init the response element
+  initElement(element) {
+    element.style.color = ''
+    element.innerHTML = ''
+  }
+
+  // Incremental message update
+  addUpdate(element, message) {
+    const updateElement = document.createElement('div')
+    updateElement.className = 'update'
+    updateElement.textContent = message
+    element.appendChild(updateElement)
+    // Auto-scroll to the bottom to show new updates
+    element.scrollTop = element.scrollHeight
+  }
+
   // Display error messages
-  showError(message) {
-    const responseDiv = document.getElementById('response')
-    responseDiv.textContent = message
-    responseDiv.style.color = 'red'
+  showError(element, message) {
+    element.style.color = 'red'
+    this.addUpdate(element, message)
   }
 
   // Attach event listeners
