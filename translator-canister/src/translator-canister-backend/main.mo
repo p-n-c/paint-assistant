@@ -1,4 +1,5 @@
 import Map "mo:base/HashMap";
+import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 
 /**
@@ -63,6 +64,25 @@ actor PaintTranslator {
       Text.equal,
       Text.hash,
     );
+  };
+
+  /**
+     * Returns all cache entries as an array.
+     * We transform the HashMap entries into an array using Motoko's built-in
+     * Array and Iterator functions. The conversion happens in these steps:
+     * 1. Get all entries from the HashMap using entries()
+     * 2. Convert each key-value pair into just the TranslationEntry value
+     * 3. Convert the iterator into an array
+     *
+     * @returns [TranslationEntry] - Array containing all cached translations
+     */
+  public query func get_cache() : async [TranslationEntry] {
+    let entries = translations.entries();
+    let values = Iter.map<(Text, TranslationEntry), TranslationEntry>(
+      entries,
+      func((k, v) : (Text, TranslationEntry)) : TranslationEntry = v,
+    );
+    Iter.toArray(values);
   };
 
   /**

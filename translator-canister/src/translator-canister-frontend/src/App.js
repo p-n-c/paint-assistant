@@ -12,6 +12,7 @@ class App {
     this.queryInput = document.getElementById('queryInput')
     this.responseDiv = document.getElementById('response')
     this.clearButton = document.getElementById('clearCache')
+    this.displayButton = document.getElementById('displayCache')
 
     // Initialize translation service
     this.translationService = new TranslationService(
@@ -53,6 +54,7 @@ class App {
         checkCache: translator_canister_backend.check_cache,
         clearCache: translator_canister_backend.clear_cache,
         storeTranslation: translator_canister_backend.store_translation,
+        getCache: translator_canister_backend.get_cache,
       }
     } catch (error) {
       console.error('Failed to initialize backend canister:', error)
@@ -89,7 +91,6 @@ class App {
         this.addUpdate(this.responseDiv, `AI Translated query: ${parameters}`)
         this.addUpdate(this.responseDiv, 'Querying Paint API')
         const apiResponse = await this.paintApiService.queryPaint(parameters)
-        this.addUpdate(this.responseDiv, 'Response received - Storing in cache')
         await this.storeInCache(query, parameters, apiResponse)
         this.addUpdate(this.responseDiv, 'Storage done - API response:')
         this.addUpdate(this.responseDiv, this.formatPaintDetails(apiResponse))
@@ -142,16 +143,20 @@ class App {
       .map((paint) => (typeof paint === 'string' ? JSON.parse(paint) : paint))
 
     // Create the HTML for each paint object
-    return paints
-      .map(
-        (paint) => `
-        <details>
-            <summary>${paint.name} (${paint.code})</summary>
-            <pre>${JSON.stringify(paint, null, '| ')}</pre>
-        </details>
-    `
-      )
-      .join('\n')
+    if (paints.length > 0) {
+      return paints
+        .map(
+          (paint) => `
+          <details>
+              <summary>${paint.name} (${paint.code})</summary>
+              <pre>${JSON.stringify(paint, null, '| ')}</pre>
+          </details>
+      `
+        )
+        .join('\n')
+    } else {
+      return 'No paint found.'
+    }
   }
   // Display error messages
   showError(element, message) {
@@ -167,9 +172,25 @@ class App {
     if (this.clearButton) {
       this.clearButton.addEventListener('click', async () => {
         this.initElement(this.responseDiv)
-        this.addUpdate(this.responseDiv, 'Clearing cache  ')
+        this.addUpdate(this.responseDiv, 'Clearing cache')
         await this.canisterApi.clearCache()
         this.addUpdate(this.responseDiv, 'Cache cleared')
+      })
+    }
+    if (this.displayButton) {
+      this.displayButton.addEventListener('click', async () => {
+        this.initElement(this.responseDiv)
+        this.addUpdate(this.responseDiv, 'Getting cache')
+        const cache = await this.canisterApi.getCache()
+        if (cache.length > 0) {
+          this.addUpdate(
+            this.responseDiv,
+            JSON.stringify(cache, null, '|'),
+            'pre'
+          )
+        } else {
+          this.addUpdate(this.responseDiv, 'Empty cache')
+        }
       })
     }
   }
