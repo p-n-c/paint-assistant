@@ -83,7 +83,7 @@ class App {
         this.addUpdate(this.responseDiv, 'Querying Paint API')
         const apiResponse = await this.paintApiService.queryPaint(parameters)
         this.addUpdate(this.responseDiv, 'API response:')
-        this.addUpdate(this.responseDiv, JSON.stringify(apiResponse))
+        this.addUpdate(this.responseDiv, this.formatPaintDetails(apiResponse))
       }
     } catch (error) {
       console.error('Error querying canister:', error)
@@ -101,13 +101,33 @@ class App {
   }
 
   // Incremental message update
-  addUpdate(element, message) {
-    const updateElement = document.createElement('div')
+  addUpdate(element, message, type = 'div') {
+    const updateElement = document.createElement(type)
     updateElement.className = 'update'
-    updateElement.textContent = message
+    updateElement.innerHTML = message
     element.appendChild(updateElement)
     // Auto-scroll to the bottom to show new updates
     element.scrollTop = element.scrollHeight
+  }
+
+  // Display JSON
+  formatPaintDetails(objectArray) {
+    // Convert strings to objects if needed
+    const paints = objectArray.map((paint) =>
+      typeof paint === 'string' ? JSON.parse(paint) : paint
+    )
+
+    // Create the HTML for each paint object
+    return paints
+      .map(
+        (paint) => `
+        <details>
+            <summary>${paint.name} (${paint.code})</summary>
+            <pre>${JSON.stringify(paint, null, '| ')}</pre>
+        </details>
+    `
+      )
+      .join('\n')
   }
 
   // Display error messages
