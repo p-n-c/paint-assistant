@@ -111,6 +111,14 @@ The Paint API will be running at `http://localhost:3000`
 ├── .env                           # Environment variables
 ├── dfx.json                       # ICP canister configuration
 ├── package.json                   # Project dependencies and scripts
+├── src/
+│   ├── declarations/              # Auto-generated ICP interfaces
+│   │   ├── translator-canister-backend/
+│   │   │   └── ...               # Backend canister declarations
+│   │   └── translator-canister-frontend/
+│   │       └── ...               # Frontend canister declarations
+│   ├── translator-canister-backend/
+│   │   └── main.mo               # Motoko cache implementation
 │   └── translator-canister-frontend/
 │       ├── assets/               # Static assets
 │       ├── src/
