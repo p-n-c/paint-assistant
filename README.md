@@ -67,16 +67,15 @@ sequenceDiagram
 ## Installation & Running
 
 ```bash
-# Install Paint API dependencies
+# Install and start the Paint API
 cd paint-api
 npm install
-cd ..
-
-# Install ICP project dependencies
-npm install
-
-# Start the Paint API (in a separate terminal)
 node server.js
+
+# In a different terminal
+# Install ICP project dependencies
+cd translator-canister
+npm install
 
 # Start the ICP replica (in background)
 dfx start --background --clean
@@ -84,7 +83,7 @@ dfx start --background --clean
 # Deploy canisters to the replica
 dfx deploy
 
-# Start the development server
+# Start the Vite development server
 npm start
 ```
 
@@ -103,23 +102,15 @@ The Paint API will be running at `http://localhost:3000`
    - Use "Clear Cache" button to reset the in-memory cache
    - Use "Display Cache" to see all cached translations
    - Note: The cache persists across server restarts due to blockchain storage
-   - To completely reset the cache, stop the replica and restart with `dfx start --clean`
+   - To completely reset the cache, stop the replica and restart with `dfx start --background --clean`
 
-### Project Structure
+### ICP Project Structure
 
 ```
 .
 ├── .env                           # Environment variables
 ├── dfx.json                       # ICP canister configuration
 ├── package.json                   # Project dependencies and scripts
-├── src/
-│   ├── declarations/              # Auto-generated ICP interfaces
-│   │   ├── translator-canister-backend/
-│   │   │   └── ...               # Backend canister declarations
-│   │   └── translator-canister-frontend/
-│   │       └── ...               # Frontend canister declarations
-│   ├── translator-canister-backend/
-│   │   └── main.mo               # Motoko cache implementation
 │   └── translator-canister-frontend/
 │       ├── assets/               # Static assets
 │       ├── src/
@@ -173,7 +164,7 @@ curl http://localhost:3000?maxvoc=40
 - Implements caching logic in Motoko
 - Stores translations and API responses permanently on the blockchain
 - Provides query/storage interfaces
-- Cache persists until explicitly cleared with `dfx start --clean`
+- Cache persists until explicitly cleared with `dfx start --background --clean`
 
 ### Translation Service
 
