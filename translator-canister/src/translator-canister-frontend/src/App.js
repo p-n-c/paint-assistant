@@ -8,8 +8,10 @@ class App {
     this.canisterApi = null
 
     // Access document elements
+    this.form = document.getElementById('query-form')
     this.queryInput = document.getElementById('queryInput')
     this.responseDiv = document.getElementById('response')
+    this.clearButton = document.getElementById('clearCache')
 
     // Initialize translation service
     this.translationService = new TranslationService(
@@ -75,6 +77,7 @@ class App {
       if (cached.length > 0) {
         // Simply return the cached answer
         this.addUpdate(this.responseDiv, 'Found in cache:')
+        // Makes sure it's an array - Thanks Claude :)
         const cachedResponse = JSON.parse(cached[0].api_response)
         this.addUpdate(
           this.responseDiv,
@@ -86,7 +89,7 @@ class App {
         this.addUpdate(this.responseDiv, `AI Translated query: ${parameters}`)
         this.addUpdate(this.responseDiv, 'Querying Paint API')
         const apiResponse = await this.paintApiService.queryPaint(parameters)
-        this.addUpdate(this.responseDiv, 'Response received - Storing in cche')
+        this.addUpdate(this.responseDiv, 'Response received - Storing in cache')
         await this.storeInCache(query, parameters, apiResponse)
         this.addUpdate(this.responseDiv, 'Storage done - API response:')
         this.addUpdate(this.responseDiv, this.formatPaintDetails(apiResponse))
@@ -133,10 +136,10 @@ class App {
   }
   // Display JSON
   formatPaintDetails(objectArray) {
-    // Convert strings to objects if needed
-    const paints = objectArray.map((paint) =>
-      typeof paint === 'string' ? JSON.parse(paint) : paint
-    )
+    // Convert strings to objects if needed - First makes sure it's in an array
+    const paints = []
+      .concat(objectArray)
+      .map((paint) => (typeof paint === 'string' ? JSON.parse(paint) : paint))
 
     // Create the HTML for each paint object
     return paints
@@ -158,9 +161,16 @@ class App {
 
   // Attach event listeners
   attachEventListeners() {
-    const form = document.getElementById('query-form')
-    if (form) {
-      form.addEventListener('submit', this.handleSubmit)
+    if (this.form) {
+      this.form.addEventListener('submit', this.handleSubmit)
+    }
+    if (this.clearButton) {
+      this.clearButton.addEventListener('click', async () => {
+        this.initElement(this.responseDiv)
+        this.addUpdate(this.responseDiv, 'Clearing cache  ')
+        await this.canisterApi.clearCache()
+        this.addUpdate(this.responseDiv, 'Cache cleared')
+      })
     }
   }
 }
