@@ -75,14 +75,20 @@ class App {
       if (cached.length > 0) {
         // Simply return the cached answer
         this.addUpdate(this.responseDiv, 'Found in cache:')
-        this.addUpdate(this.responseDiv, `${JSON.stringify(cached)}`)
+        const cachedResponse = JSON.parse(cached[0].api_response)
+        this.addUpdate(
+          this.responseDiv,
+          this.formatPaintDetails(cachedResponse)
+        )
       } else {
         this.addUpdate(this.responseDiv, 'Not found in cache - Querying API')
         const parameters = await this.translationService.translateQuery(query)
         this.addUpdate(this.responseDiv, `AI Translated query: ${parameters}`)
         this.addUpdate(this.responseDiv, 'Querying Paint API')
         const apiResponse = await this.paintApiService.queryPaint(parameters)
-        this.addUpdate(this.responseDiv, 'API response:')
+        this.addUpdate(this.responseDiv, 'Response received - Storing in cche')
+        await this.storeInCache(query, parameters, apiResponse)
+        this.addUpdate(this.responseDiv, 'Storage done - API response:')
         this.addUpdate(this.responseDiv, this.formatPaintDetails(apiResponse))
       }
     } catch (error) {
@@ -94,12 +100,28 @@ class App {
     }
   }
 
+  // Store the result in cache
+  async storeInCache(naturalQuery, parameters, apiResponse) {
+    try {
+      const [queryType, queryValue] = Object.entries(parameters)[0]
+      await this.canisterApi.storeTranslation(
+        naturalQuery,
+        JSON.stringify(queryType),
+        JSON.stringify(queryValue),
+        JSON.stringify(apiResponse)
+      )
+    } catch (error) {
+      console.error('Failed to store translation:', error)
+      throw new Error('Failed to store translation')
+    }
+  }
+
+  // Display management
   // Init the response element
   initElement(element) {
     element.style.color = ''
     element.innerHTML = ''
   }
-
   // Incremental message update
   addUpdate(element, message, type = 'div') {
     const updateElement = document.createElement(type)
@@ -109,7 +131,6 @@ class App {
     // Auto-scroll to the bottom to show new updates
     element.scrollTop = element.scrollHeight
   }
-
   // Display JSON
   formatPaintDetails(objectArray) {
     // Convert strings to objects if needed
@@ -129,7 +150,6 @@ class App {
       )
       .join('\n')
   }
-
   // Display error messages
   showError(element, message) {
     element.style.color = 'red'
