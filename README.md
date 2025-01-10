@@ -56,14 +56,6 @@ sequenceDiagram
 - An Anthropic API key for Claude AI access
 - WSL if using Windows (dfx doesn't run natively on Windows)
 
-## Environment Setup
-
-1. Copy `.env.example` to `.env`
-2. Add your Anthropic API key:
-   ```
-   VITE_CLAUDE_API_KEY=your-api-key-here
-   ```
-
 ## Installation & Running
 
 ```bash
@@ -82,6 +74,11 @@ dfx start --background --clean
 
 # Deploy canisters to the replica
 dfx deploy
+
+# Modify the .env file
+echo >> .env # Ensures new line
+echo "VITE_CLAUDE_API_KEY=your-api-key-here" >> .env # Insert your own API key
+echo "VITE_PAINT_API_URL='http://localhost:3000'" >> .env # Default address of the paint API
 
 # Start the Vite development server
 npm start
