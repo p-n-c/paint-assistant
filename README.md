@@ -198,10 +198,19 @@ curl http://localhost:3000?maxvoc=40
    - Environment variables must be prefixed with `VITE_`
 
 4. **Cache Persistence**
+   
    - The cache is stored on the blockchain and persists across restarts
    - `Clear Cache` button only clears the current canister's memory
    - For a complete reset, use `dfx start --clean`
-
+  
+## Potential improvements
+   
+   - Complex queries with more than one parameter
+   - Result processing by another user-side LLM instance to provide a natural language answer
+   - Chat-like interface with query refinement
+   - Move the LLM query to the backend to avoid exposing the API key
+   - Proper on-chain online implementation
+   
 ## Learning Resources
 
 - [Internet Computer Documentation](https://internetcomputer.org/docs/current/developer-docs/ic-overview)
