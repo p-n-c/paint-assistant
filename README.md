@@ -99,10 +99,28 @@ The Paint API will be running at `http://localhost:3000`
    - "Find paints with VOC under 35"
 
 2. **Cache Management**:
+
    - Use "Clear Cache" button to reset the in-memory cache
    - Use "Display Cache" to see all cached translations
    - Note: The cache persists across server restarts due to blockchain storage
    - To completely reset the cache, stop the replica and restart with `dfx start --background --clean`
+
+3. **Quicks steps for testing/restarting**
+
+```bash
+# From the translator-canister directory
+# Stop the ICP replica
+dfx stop
+# Restart it - It can take some time to free the port
+dfx start --background --clean
+# (Optional) Kill all stray dfx processes
+dfx killall
+# Deploy the canister
+dfx deploy
+```
+
+You can keep the Vite server running in its own terminal and just reload it by typing `r`.
+If in doubt, quit the server by typing `q` and restart it with `npm start`
 
 ### ICP Project Structure
 
@@ -198,19 +216,19 @@ curl http://localhost:3000?maxvoc=40
    - Environment variables must be prefixed with `VITE_`
 
 4. **Cache Persistence**
-   
+
    - The cache is stored on the blockchain and persists across restarts
    - `Clear Cache` button only clears the current canister's memory
    - For a complete reset, use `dfx start --clean`
-  
+
 ## Potential improvements
-   
-   - Complex queries with more than one parameter
-   - Result processing by another user-side LLM instance to provide a natural language answer
-   - Chat-like interface with query refinement
-   - Move the LLM query to the backend to avoid exposing the API key
-   - Proper on-chain online implementation
-   
+
+- Complex queries with more than one parameter
+- Result processing by another user-side LLM instance to provide a natural language answer
+- Chat-like interface with query refinement
+- Move the LLM query to the backend to avoid exposing the API key
+- Proper on-chain online implementation
+
 ## Learning Resources
 
 - [Internet Computer Documentation](https://internetcomputer.org/docs/current/developer-docs/ic-overview)
