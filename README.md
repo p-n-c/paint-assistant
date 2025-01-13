@@ -108,10 +108,10 @@ The Paint API will be running at `http://localhost:3000`
 # From the translator-canister directory
 # Stop the ICP replica
 dfx stop
-# Restart it - It can take some time to free the port
-dfx start --background --clean
 # (Optional) Kill all stray dfx processes
 dfx killall
+# Restart it - It can take some time to free the port (Using killall seems to speed things up)
+dfx start --background --clean
 # Deploy the canister
 dfx deploy
 ```
@@ -200,7 +200,7 @@ curl http://localhost:3000?maxvoc=40
 1. **WSL Users**
 
    - Ensure all commands are run within WSL
-   - The Paint API server must be accessible from WSL
+   - The Paint API server must be accessible from WSL but can be run directly from Windows (e.g. in git bash)
 
 2. **Canister Deployment**
 
@@ -214,8 +214,8 @@ curl http://localhost:3000?maxvoc=40
 
 4. **Cache Persistence**
 
-   - The cache is stored on the blockchain and persists across restarts
-   - `Clear Cache` button only clears the current canister's memory
+   - The translation cache is stored on the blockchain and persists across restarts with `dfx deploy`
+   - `Clear Cache` button clears the translation cache, but leaves any other stored data intact
    - For a complete reset, use `dfx start --clean`
 
 ## Potential improvements
@@ -228,6 +228,6 @@ curl http://localhost:3000?maxvoc=40
 
 ## Learning Resources
 
-- [Internet Computer Documentation](https://internetcomputer.org/docs/current/developer-docs/ic-overview)
-- [Claude AI Documentation](https://docs.anthropic.com/claude/docs)
+- [Internet Computer from scratch](https://internetcomputer.org/docs/current/tutorials/developer-journey/)
+- [Claude API reference](https://docs.anthropic.com/en/api/getting-started)
 - [Vite Documentation](https://vitejs.dev/guide/)
